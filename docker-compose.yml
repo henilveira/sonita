@@ -1,0 +1,8 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - "54321:54321"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: onixl123
