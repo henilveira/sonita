@@ -3,6 +3,7 @@ package com.henilveira.sonita.controllers;
 import com.henilveira.sonita.domain.product.ProductDTO;
 import com.henilveira.sonita.domain.product.Product;
 import com.henilveira.sonita.repositories.ProductRepository;
+import com.henilveira.sonita.services.ProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,27 +15,23 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductController {
 
     @Autowired
     ProductRepository repository;
 
+    @Autowired
+    ProductService service;
+
     @GetMapping("/getall")
     public ResponseEntity getProducts() {
-        List<Product> listProducts = repository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(listProducts);
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
 
     @PostMapping("/create")
     public ResponseEntity saveProduct(@RequestBody ProductDTO dto) {
-
-        // Instanciando novo objeto da classe Product
-        var product = new Product();
-
-        // Copiando as propriedades do DTO e colando na product para nao usar um objeto de tipo entidade para transicionar dados na API
-        BeanUtils.copyProperties(dto, product );
-        return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(product));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
     @GetMapping()
@@ -50,8 +47,7 @@ public class ProductController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteProduct(@PathVariable UUID id) {
-        repository.deleteById(id);
-
+        service.deleteById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Produto deletado com sucesso!");
     }
 }
