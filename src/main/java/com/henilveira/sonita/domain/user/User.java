@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -36,8 +37,17 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRoles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        // Se a role do usuário for "admin" (valor do enum), adicione ROLE_ADMIN
+        if (this.role.equals(UserRoles.ADMIN.getRole())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
+        // Todos os usuários (incluindo admin) têm ROLE_USER
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return authorities;
     }
 
     @Override
