@@ -27,10 +27,16 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/product").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/product").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/products/create").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/products/getall").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/user/getall").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/products/delete/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -44,6 +50,5 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder();}
-
 
 }
